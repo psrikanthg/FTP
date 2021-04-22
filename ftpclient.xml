@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ftpclient" default="all">
+  
+  
+  <property file="ftpclient.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*.yarb/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.swc"/>
+    <include name="*.zip"/>
+    <include name="*.egg"/>
+    <include name="*.ane"/>
+    <include name="*.jar"/>
+    <include name="*.ear"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+    <exclude name="**/?*.aj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.8" value="${jdk.home.1.8}/bin"/>
+  <path id="jdk.classpath.1.8">
+    <fileset dir="${jdk.home.1.8}">
+      <include name="jre/lib/charsets.jar"/>
+      <include name="jre/lib/deploy.jar"/>
+      <include name="jre/lib/ext/access-bridge-64.jar"/>
+      <include name="jre/lib/ext/cldrdata.jar"/>
+      <include name="jre/lib/ext/dnsns.jar"/>
+      <include name="jre/lib/ext/jaccess.jar"/>
+      <include name="jre/lib/ext/jfxrt.jar"/>
+      <include name="jre/lib/ext/localedata.jar"/>
+      <include name="jre/lib/ext/nashorn.jar"/>
+      <include name="jre/lib/ext/sunec.jar"/>
+      <include name="jre/lib/ext/sunjce_provider.jar"/>
+      <include name="jre/lib/ext/sunmscapi.jar"/>
+      <include name="jre/lib/ext/sunpkcs11.jar"/>
+      <include name="jre/lib/ext/zipfs.jar"/>
+      <include name="jre/lib/javaws.jar"/>
+      <include name="jre/lib/jce.jar"/>
+      <include name="jre/lib/jfr.jar"/>
+      <include name="jre/lib/jfxswt.jar"/>
+      <include name="jre/lib/jsse.jar"/>
+      <include name="jre/lib/management-agent.jar"/>
+      <include name="jre/lib/plugin.jar"/>
+      <include name="jre/lib/resources.jar"/>
+      <include name="jre/lib/rt.jar"/>
+    </fileset>
+  </path>
+  
+
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module FTPClient -->
+  
+  <dirname property="module.ftpclient.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.ftpclient" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.ftpclient" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.ftpclient" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.ftpclient" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="ftpclient.output.dir" value="${module.ftpclient.basedir}/out/production/FTPClient"/>
+  <property name="ftpclient.testoutput.dir" value="${module.ftpclient.basedir}/out/test/FTPClient"/>
+  
+  <path id="ftpclient.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="ftpclient.module.production.classpath">
+    <path refid="${module.jdk.classpath.ftpclient}"/>
+    <fileset dir="${basedir}/../Users/Jyotsna/Downloads/apache-commons-net.jar">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="ftpclient.runtime.production.module.classpath">
+    <pathelement location="${ftpclient.output.dir}"/>
+    <fileset dir="${basedir}/../Users/Jyotsna/Downloads/apache-commons-net.jar">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="ftpclient.module.classpath">
+    <path refid="${module.jdk.classpath.ftpclient}"/>
+    <pathelement location="${ftpclient.output.dir}"/>
+    <fileset dir="${basedir}/../Users/Jyotsna/Downloads/apache-commons-net.jar">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="ftpclient.runtime.module.classpath">
+    <pathelement location="${ftpclient.testoutput.dir}"/>
+    <pathelement location="${ftpclient.output.dir}"/>
+    <fileset dir="${basedir}/../Users/Jyotsna/Downloads/apache-commons-net.jar">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.ftpclient">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.ftpclient">
+    <patternset refid="excluded.from.module.ftpclient"/>
+  </patternset>
+  
+  <path id="ftpclient.module.sourcepath">
+    <dirset dir="${module.ftpclient.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.ftpclient" depends="compile.module.ftpclient.production,compile.module.ftpclient.tests" description="Compile module FTPClient"/>
+  
+  <target name="compile.module.ftpclient.production" depends="register.custom.compilers" description="Compile module FTPClient; production classes">
+    <mkdir dir="${ftpclient.output.dir}"/>
+    <javac2 destdir="${ftpclient.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.ftpclient}/javac">
+      <compilerarg line="${compiler.args.ftpclient}"/>
+      <bootclasspath refid="ftpclient.module.bootclasspath"/>
+      <classpath refid="ftpclient.module.production.classpath"/>
+      <src refid="ftpclient.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.ftpclient"/>
+    </javac2>
+    
+    <copy todir="${ftpclient.output.dir}">
+      <fileset dir="${module.ftpclient.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.ftpclient.tests" depends="register.custom.compilers,compile.module.ftpclient.production" description="compile module FTPClient; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.ftpclient" description="cleanup module">
+    <delete dir="${ftpclient.output.dir}"/>
+    <delete dir="${ftpclient.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.ftpclient" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.ftpclient" description="build all modules"/>
+  
+  <target name="init.artifacts">
+    <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
+    <property name="artifact.output.ftpjar" value="${basedir}/out/artifacts/FTPJAR"/>
+    <mkdir dir="${artifacts.temp.dir}"/>
+    <property name="temp.jar.path.FTPClient.jar" value="${artifacts.temp.dir}/FTPClient.jar"/>
+  </target>
+  
+  <target name="artifact.ftpjar" depends="init.artifacts, compile.module.ftpclient" description="Build &#39;FTPJAR&#39; artifact">
+    <property name="artifact.temp.output.ftpjar" value="${artifacts.temp.dir}/FTPJAR"/>
+    <mkdir dir="${artifact.temp.output.ftpjar}"/>
+    <jar destfile="${temp.jar.path.FTPClient.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
+      <zipfileset dir="${ftpclient.output.dir}"/>
+      <zipfileset src="${basedir}/../Users/Jyotsna/Downloads/apache-commons-net.jar/apache-commons-net.jar"/>
+    </jar>
+    <copy file="${temp.jar.path.FTPClient.jar}" tofile="${artifact.temp.output.ftpjar}/FTPClient.jar"/>
+  </target>
+  
+  <target name="build.all.artifacts" depends="artifact.ftpjar" description="Build all artifacts">
+    <mkdir dir="${artifact.output.ftpjar}"/>
+    <copy todir="${artifact.output.ftpjar}">
+      <fileset dir="${artifact.temp.output.ftpjar}"/>
+    </copy>
+    
+    <!-- Delete temporary files -->
+    <delete dir="${artifacts.temp.dir}"/>
+  </target>
+  
+  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+</project>
