@@ -18,6 +18,7 @@ public class ForEachLoop {
         gamesLIst.forEach(games -> System.out.println(games));*/
 
         List<Student> studentLIst = new ArrayList<>();
+        //commented one line of code
 
         Student s1 = new Student();
         s1.setName("Pamangundla Sreekanth");
