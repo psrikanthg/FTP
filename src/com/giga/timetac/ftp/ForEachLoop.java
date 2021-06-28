@@ -29,7 +29,7 @@ public class ForEachLoop {
         studentLIst.add(s2);
 
         studentLIst.forEach(sdt -> System.out.println(sdt.getName()+"  "+sdt.getJob()+" "+sdt.getDoj()));
-
+          //End of the program --changed by sreekanth
 
     }
 }
