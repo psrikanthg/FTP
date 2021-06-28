@@ -6,8 +6,17 @@ import org.apache.commons.net.ftp.FTPClient;
 import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.attribute.PosixFilePermission;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.StandardOpenOption;
 
+import static com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Text.NEW_LINE;
 
 /**
  * A program that demonstrates how to upload files from local computer
@@ -16,11 +25,12 @@ import java.util.*;
  */
 public class FTPClientProgram {
 
+    static PrintWriter out = null;
 
 
     public static void main(String[] args) throws Exception{
 
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("logfile.txt", true)));
+        out = new PrintWriter(new BufferedWriter(new FileWriter("logfile.txt", true)));
 
         FTPClient ftpClient = new FTPClient();
         try {
@@ -38,9 +48,15 @@ public class FTPClientProgram {
             String srcDir =  resourceBundle.getString("inputFolder");
             String destDir = resourceBundle.getString("destinationFolder");
             String fileNameStartsWith =  resourceBundle.getString("fileNameStartsWith");
-            System.out.println("Host Name: "+hostName+" Port: "+port);
-            System.out.println("UserName: "+userName+" Password: "+password);
-            System.out.println("Source Directory 1234: "+srcDir+" fileNameStartsWith: "+fileNameStartsWith);
+            String dirNameToCreate =  resourceBundle.getString("dirNameToCreate");
+            String fileNameToCreate =  resourceBundle.getString("fileNameToCreate");
+
+            System.out.println("Host Name : "+hostName+" Port : "+port);
+            System.out.println("UserName : "+userName+" Password : "+password);
+            System.out.println("Source Directory : "+srcDir);
+            System.out.println("FileNameStartsWith : "+fileNameStartsWith);
+            System.out.println("DirNameToCreate : "+dirNameToCreate);
+            System.out.println("FileNameToCreate : "+fileNameToCreate);
 
             ftpClient.connect(hostName, Integer.valueOf(port));
             ftpClient.login(userName, password);
@@ -48,8 +64,9 @@ public class FTPClientProgram {
 
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
             System.out.println(" File Copying Started");
-            String outPutMsg =copyToSTP(srcDir, destDir, fileNameStartsWith, ftpClient);
+            String outPutMsg =copyToSTP(srcDir, destDir, fileNameStartsWith, dirNameToCreate, fileNameToCreate, ftpClient);
             System.out.println(" File Copying Ended");
+            deleteInputFile(srcDir, fileNameStartsWith);
             out.println(outPutMsg);
             out.println("Batch Ended.@ " + new Date());
             out.println("-------------------------------******************************-------------------------------------------------------");
@@ -74,39 +91,204 @@ public class FTPClientProgram {
         }
     }
 
-
-    public static String copyToSTP(String srcDir, String destDir, String fileNameStartsWith, FTPClient ftpClient){
-
+    public static void deleteInputFile(String srcDir, String fileNameStartsWith){
+        out.println(" ****** starting deleteInputFile  *********");
         try {
-            StringBuffer sb = new StringBuffer();
+
+            File directory = new File(srcDir);
+            File[] files = directory.listFiles();
+            System.out.println("  deleteInputFile:::  ");
+            for (File file : files) {
+                out.print(file.getName());
+
+                if(fileNameStartsWith!=null && file.getName().contains(fileNameStartsWith)){
+                    Files.delete(Paths.get(srcDir+"/"+file.getName()));
+                    out.print(" been deleted Successfully::");
+                }else {
+                    out.print(" not found with "+fileNameStartsWith+"\n");
+                }
+
+            }
+
+        }  catch (IOException io) {
+                io.printStackTrace();
+                out.println(" ****** IOException  deleteInputFile  *********"+io.getMessage());
+                System.out.println(" IOException:::  "+io.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
+                out.println(" ****** Exception  deleteInputFile  *********"+e.getMessage());
+            System.out.println(" Exception:::  "+e.getMessage());
+
+            }
+        System.out.println(" deleteInputFile:::  ");
+        out.println(" ****** end deleteInputFile  *********");
+
+    }
+
+    public static String copyToSTP(String srcDir, String destDir, String fileNameStartsWith, String dirToCreate, String fileNameToCreate, FTPClient ftpClient){
+
+        StringBuffer sb = new StringBuffer();
+        try {
+            out.println(" ****** starting copyToSTP  *********");
+           // File tempFile = new File("C:/Micro ID Sdn. Bhd - Copy/music.txt");
+            //SRW_210616_121500  ddMMyyyy
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd_HHmmss");
+            String fileName  =fileNameToCreate+now.format(formatter);
+            // Path path1 = Paths.get("E:/Micro ID Sdn. Bhd - Copy1");
+            Path path1 = Paths.get(dirToCreate);
+
             Calendar midnightToday = new GregorianCalendar();
             midnightToday.set(Calendar.HOUR_OF_DAY, 0);
             midnightToday.set(Calendar.MINUTE, 0);
 
             midnightToday.set(Calendar.SECOND, 0);
             midnightToday.set(Calendar.MILLISECOND, 0);
+            if(Files.notExists(path1)){
+                try {
+                    Files.createDirectories(path1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                // using PosixFilePermission to set file permissions
+                Set<PosixFilePermission> perms = new HashSet<>();
+                perms.add( PosixFilePermission.OWNER_READ );
+                perms.add( PosixFilePermission.OWNER_WRITE );
+                perms.add( PosixFilePermission.GROUP_READ );
+                perms.add( PosixFilePermission.GROUP_WRITE );
+                perms.add( PosixFilePermission.OTHERS_READ );
+                perms.add( PosixFilePermission.OTHERS_WRITE );
+
+                    //Files.setPosixFilePermissions(Paths.get("E:/MicroID"), perms );
+
+
+
+            }
+            if(Files.exists(path1)) {
+                System.out.println("Directory exists:: ");
+            }else {
+                System.out.println("Directory Not Exists:: ");
+
+            }
+
 
             File directory = new File(srcDir);
             File[] files = directory.listFiles();
 
-            for (File file : files) {
+           for (File file : files) {
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                 //&& lastMod.compareTo(midnightToday.getTime()) > 0
                 Date lastMod = new Date(file.lastModified());
-                if (file.getName().startsWith(fileNameStartsWith)
-                        && lastMod.compareTo(midnightToday.getTime()) > 0) {
-                    System.out.println("today file created is:: "+file.getName());
-                    if(sendTOFTPServer(file, ftpClient))
-                         sb.append("File >> " + file.getName() + " Copied Successfully.");
-                    else
-                        sb.append("File >> " + file.getName() + " Copied Failed.");
+                if (file.getName().startsWith(fileNameStartsWith) && lastMod.compareTo(midnightToday.getTime()) > 0) {
+                    String st ="";
+
+                   // Path path = Paths.get("E:/Micro ID Sdn. Bhd - Copy1/"+file.getName()+".txt");
+                    Path path = Paths.get(dirToCreate+"/"+fileName+".txt");
+                    System.out.println("file created is:: "+path.getFileName());
+                    Files.write(path, "".getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                    while ((st = br.readLine()) != null){
+                        if(st.contains(" ")) {
+
+                            String[] staffAtt = st.split(" ");
+                          //System.out.print("starff:: "+staffAtt.length);
+                            //in case Array is empty
+                            String staffId = "";
+                            String finalString = null;
+                            String checkInOutFlag = "";
+                            if (staffAtt.length == 0 || staffAtt.length == 2){
+                                if (staffAtt != null && staffAtt[0].length() > 0 && staffAtt[0] != null && staffAtt[0].startsWith("000")) {
+                                    checkInOutFlag = staffAtt[0].replaceFirst("000", "001");
+                                } else  if (staffAtt != null && staffAtt[0].length() > 0 && staffAtt[0] != null && staffAtt[0].startsWith("001")) {
+                                checkInOutFlag = staffAtt[0].replaceFirst("001", "002");
+                                } else {
+                                    checkInOutFlag = staffAtt[0];
+                                }
+
+                            if (staffAtt != null && staffAtt.length > 1 && staffAtt[1] != null && staffAtt[1].length() > 0) {
+                                // System.out.println(staffAtt[0]+" Staff ID: "+staffAtt[1]);
+                                if (staffAtt[1].trim().length() == 5)
+                                    staffId = "00000" + staffAtt[1].trim();
+                                else if (staffAtt[1].trim().length() == 6)
+                                    staffId = "0000" + staffAtt[1].trim();
+                                else if (staffAtt[1].trim().length() == 7)
+                                    staffId = "000" + staffAtt[1].trim();
+                                else if (staffAtt[1].trim().length() == 8)
+                                    staffId = "00" + staffAtt[1].trim();
+                                else if (staffAtt[1].trim().length() == 9)
+                                    staffId += "0" + staffAtt[1].trim();
+                                else
+                                    staffId = staffAtt[1].trim();
+
+                                finalString = checkInOutFlag + " " + staffId + NEW_LINE;
+
+                                Files.write(path, finalString.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
+                            } else {
+                                finalString = staffAtt[0] + NEW_LINE;
+                                Files.write(path, finalString.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                            }
+                          }
+                        }else {
+                            Files.write(path, st.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                        }
+                     }
+
                 }
+               br.close();
             }
-            return sb.toString();
+            return sendModifiedFile(fileNameToCreate, dirToCreate, ftpClient);
+        }  catch (FileNotFoundException e) {
+            e.printStackTrace();
+            out.println(" ****** Exception FileNotFoundException copyToSTP  *********"+e.getMessage());
+
+        } catch (IOException io) {
+            io.printStackTrace();
+            out.println(" ****** IOException  copyToSTP  *********"+io.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
+            out.println(" ****** Exception  copyToSTP  *********"+e.getMessage());
             return e.getLocalizedMessage();
         }
+
+        out.println(" ****** End of  copyToSTP  *********");
+        return sb.toString();
     }
 
+    public static String sendModifiedFile(String  fileNameToCreate, String dirToCreate, FTPClient ftpClient){
+
+        StringBuffer sb = null;
+        try {
+            out.println(" ****** Start of  sendModifiedFile  *********");
+            System.out.println(" sendModifiedFile -->>>  ");
+            File directory = new File(dirToCreate);
+            File[] files = directory.listFiles();
+            Calendar midnightToday = new GregorianCalendar();
+            midnightToday.set(Calendar.HOUR_OF_DAY, 0);
+            midnightToday.set(Calendar.MINUTE, 0);
+
+            midnightToday.set(Calendar.SECOND, 0);
+            midnightToday.set(Calendar.MILLISECOND, 0);
+            sb = new StringBuffer();
+            for(File file: files){
+                System.out.println("dirToCreate File Name is:: "+file.getName());
+                Date lastMod = new Date(file.lastModified());
+                if (file.getName().startsWith(fileNameToCreate)  && lastMod.compareTo(midnightToday.getTime()) > 0) {
+                    if(sendTOFTPServer(file, ftpClient))
+                        sb.append("File >> " + file.getName() + " Copied Successfully.\n");
+                    else
+                        sb.append("File >> " + file.getName() + " Copied Failed. \n");
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.println(" ****** Exception of  sendModifiedFile  *********");
+        }
+
+        return sb.toString();
+
+    }
     public static boolean sendTOFTPServer(File file, FTPClient ftpClient){
         boolean msg = false;
         try {
@@ -128,9 +310,9 @@ public class FTPClientProgram {
 
             inputStream.close();
 
-
         } catch (IOException e) {
             e.printStackTrace();
+            out.println(" ****** Exception of  sendTOFTPServer  *********");
         }
 
         return msg;

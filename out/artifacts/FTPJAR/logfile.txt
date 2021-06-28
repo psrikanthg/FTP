@@ -3,3 +3,9 @@ Batch Started @ Thu Mar 18 12:46:18 SGT 2021
 File >> SH1120GV183PKG (6).zip Copied Successfully.File >> SH1120GV183PKG 1 - Copy (2).txt Copied Successfully.File >> SH1120GV183PKG 1 - Copy (3).txt Copied Successfully.File >> SH1120GV183PKG 1 - Copy (4).txt Copied Successfully.File >> SH1120GV183PKG 1 - Copy (5).txt Copied Successfully.File >> SH1120GV183PKG 1 - Copy (6).txt Copied Successfully.File >> SH1120GV183PKG 1 - Copy.txt Copied Successfully.File >> SH1120GV183PKG 1.txt Copied Successfully.
 Batch Ended1234.@ Thu Mar 18 12:46:19 SGT 2021
 -------------------------------******************************-------------------------------------------------------
+---------------------******************************-------------------------------------------------------
+Batch Started @ Wed Jun 16 14:07:15 SGT 2021
+File >> GCT - Copy.txt Copied Successfully.
+
+Batch Ended.@ Wed Jun 16 14:07:25 SGT 2021
+-------------------------------******************************-------------------------------------------------------
