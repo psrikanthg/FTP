@@ -175,6 +175,25 @@ public class FTPClientProgram {
 
             File directory = new File(srcDir);
             File[] files = directory.listFiles();
+            int totalLines =0;
+            for (File file : files) {
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                Date lastMod = new Date(file.lastModified());
+                if (file.getName().startsWith(fileNameStartsWith) && lastMod.compareTo(midnightToday.getTime()) > 0) {
+                    String st ="";
+                    while ((st = br.readLine()) != null){
+                        if(st.contains(" ")) {
+                            String[] staffAtt = st.split(" ");
+                            if (staffAtt.length == 0 || staffAtt.length == 2){
+                                totalLines++;
+                            }
+                        }
+                    }
+                }
+                br.close();
+            }
+
+            System.out.println("Total Lines are:: "+totalLines);
 
            for (File file : files) {
                 BufferedReader br = new BufferedReader(new FileReader(file));
@@ -187,6 +206,7 @@ public class FTPClientProgram {
                     Path path = Paths.get(dirToCreate+"/"+fileName+".txt");
                     System.out.println("file created is:: "+path.getFileName());
                     Files.write(path, "".getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                    long numberOfLines =0;
                     while ((st = br.readLine()) != null){
                         if(st.contains(" ")) {
 
@@ -219,18 +239,27 @@ public class FTPClientProgram {
                                     staffId += "0" + staffAtt[1].trim();
                                 else
                                     staffId = staffAtt[1].trim();
-
-                                finalString = checkInOutFlag + " " + staffId + NEW_LINE;
-
-                                Files.write(path, finalString.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                                numberOfLines++;
+                                finalString = checkInOutFlag + " " + staffId;
+                                if(totalLines >=2){
+                                    finalString+=NEW_LINE;
+                                }
+                                totalLines--;
+                                Files.write(path, (finalString).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 
                             } else {
+                                System.out.println(" staffAtt[1]  "+staffAtt[1] );
                                 finalString = staffAtt[0] + NEW_LINE;
                                 Files.write(path, finalString.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                             }
                           }
                         }else {
-                            Files.write(path, st.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
+                            if(!st.equals("") && !st.isEmpty()){
+                                System.out.println(" Striss ->>>>"+st);
+                                Files.write(path, st.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                            }
+
                         }
                      }
 
