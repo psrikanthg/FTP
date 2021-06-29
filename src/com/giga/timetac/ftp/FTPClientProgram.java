@@ -193,7 +193,11 @@ public class FTPClientProgram {
                 br.close();
             }
 
+
             System.out.println("Total Lines are::--->>> "+totalLines);
+
+            System.out.println("New Satement Added;; ");
+
 
            for (File file : files) {
                 BufferedReader br = new BufferedReader(new FileReader(file));
