@@ -27,6 +27,13 @@ public class Product {
 		productList.add(new Product(1,"Lenevo Laptop", 28000f));
 		productList.add(new Product(1,"Soney Laptop", 28000f));
 		productList.add(new Product(1,"Apple Laptop", 90000f));
+		
+		productList.add(new Product(1,"Samsung Phone", 2500f));
+		productList.add(new Product(1,"Apple ", 3000f));
+		productList.add(new Product(1,"Lenevo Phone", 28000f));
+		productList.add(new Product(1,"Soney Phone", 28000f));
+		productList.add(new Product(1,"Apple I6", 90000f));
+		
 		List<Float> productPriceList = new ArrayList<>();
 		
 		for(Product product: productList) {
